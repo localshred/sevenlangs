@@ -30,37 +30,71 @@
 
 2dMatrix transpose := method(
 	# create a new matrix to return
-	new_matrix := 2dMatrix clone
+	newMatrix := 2dMatrix clone
 
 	# Extract the number of lists in self (to become the # elements in new)
-	num_cols := self matrix size
+	numCols := self matrix size
 
 	# Extract # elements per list in self (to become # of lists)
-	num_rows := self matrix at(0) size
+	numRows := self matrix at(0) size
 
 	# Initialize the matrix size
-	new_matrix dim(num_cols, num_rows)
+	newMatrix dim(numCols, numRows)
 
-	for(i, 0, num_rows - 1,
-		for(j, 0, num_cols - 1,
-			new_matrix set(j, i, self get(i, j))
+	for(i, 0, numRows - 1,
+		for(j, 0, numCols - 1,
+			newMatrix set(j, i, self get(i, j))
 		)
 	)
 
-	return(new_matrix)
+	return(newMatrix)
 )
 
+# Create a csv-style string from the matrix.
+# Helpful for use in 2dMatrix toFile method.
+2dMatrix asString := method(self matrix map(join(",")) join("\n"))
+
+# Get a new 2dMatrix object by parsing the csv-style string.
+# Helpful for use in 2dMatrix fromFile method.
+2dMatrix fromString := method(string,
+	rawMatrix := string split("\n") map(split(","))
+	numRows := rawMatrix size
+	numCols := rawMatrix at(0) size
+
+	newMatrix := 2dMatrix clone
+	newMatrix dim(numCols, numRows)
+	for(i, 0, numRows - 1,
+		for(j, 0, numCols - 1,
+			newMatrix set(j, i, rawMatrix at(i) at(j))
+		)
+	)
+
+	return(newMatrix)
+)
+
+2dMatrix toFile := method(filename,
+	writeln("Exporting matrix to file", filename)
+	file := File with(filename) remove openForUpdating write(self asString)
+	file close
+)
+
+2dMatrix fromFile := method(filename,
+	file := File with(filename) openForReading
+	matrix := 2dMatrix fromString(file contents)
+	file close
+	return(matrix)
+)
 
 "Create a 5x5 2d list" println
-five_by_five := 2dMatrix clone
-five_by_five dim(5,5)
-five_by_five set(3,4, "Hello")
+fiveByFive := 2dMatrix clone
+fiveByFive dim(5,5)
+fiveByFive set(3,4, "Hello")
 "3,4 is the right object? " print
-(five_by_five get(3,4) == "Hello") println
+(fiveByFive get(3,4) == "Hello") println
 
 "Transposing the table" println
-transposed := five_by_five transpose
+transposed := fiveByFive transpose
 "Does 3,4 == 4,3? " print
-(transposed get(4,3) == five_by_five get(3,4)) println
+(transposed get(4,3) == fiveByFive get(3,4)) println
 "4,3 is the right object? " print
 (transposed get(4,3) == "Hello") println
