@@ -1,5 +1,12 @@
 -module(error_success).
--export([print_state/1]).
+-export([error_or_success/1]).
 
-print_state({error, Message}) -> string:concat("error: ", Message);
-print_state(_) -> "success".
+% Print the error message if given a
+% tuple with key error and any value.
+error_or_success({error, Message}) ->
+  io:format("error: ~s~n", [Message]);
+
+% Print the success atom if it's
+% the argument given.
+error_or_success(success) ->
+  io:format("~w~n", [success]).

@@ -1,7 +1,17 @@
 -module(count_to_ten).
--export([count_to_ten/0]).
+-export([count/0]).
 
-count_to_ten() -> count_up(1, 10).
+% Match a 10, print we're done.
+count(10) ->
+  io:format("10 yay you're done\n"),
+  ok;
 
-count_up(End, End) -> End;
-count_up(Start, End) -> Next = Start + 1, count_up(Next, End).
+% Match a number, print it, and recurse
+% with the next number.
+count(N) ->
+  io:format("~w~n", [N]),
+  count(N+1).
+
+% Invoke the count starting at 1.
+count() -> count(1).
+
